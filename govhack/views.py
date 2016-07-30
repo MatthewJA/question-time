@@ -20,3 +20,8 @@ def interesting_trends(place_name):
 def points_of_interest():
     with open('govhack/points_of_interest_sample.json') as f:
         return f.read()
+
+@app.route('/heatmap_points')
+def heatmap_points():
+    with open('govhack/heatmap_sample.json') as f:
+        return f.read()

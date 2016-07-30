@@ -105,12 +105,33 @@ $(document).ready(function() {
         source: new ol.source.OSM()
     });
 
+
+
     function transform_geometry(element) {
         var current_projection = new ol.proj.Projection({code: "EPSG:4326"});
         var new_projection = osm_layer.getSource().getProjection();
         element.getGeometry().transform(current_projection, new_projection);
     };
 
+    var generate_heatmap_layer = (elements) => {
+        var heatmap_features = []
+        var data = new ol.source.Vector();
+        elements.forEach(element => {
+            var pt = new ol.geom.Point([element.lon, element.lat]);
+            var heatmap_feature = new ol.Feature({
+                geometry: pt,
+                weight: element.weight
+            });
+            transform_geometry(heatmap_feature);
+            heatmap_features.push(heatmap_feature);
+        });
+        data.addFeatures(heatmap_features);
+        heatMapLayer = new ol.layer.Heatmap({
+            source: data,
+            radius: 5
+        });
+        return heatMapLayer;
+    }
 
     features.forEach(transform_geometry);
 
@@ -152,6 +173,18 @@ $(document).ready(function() {
         .then(response=>response.json())
     }
 
+    var fetch_heatmap = () => {
+        return fetch('/heatmap_points')
+        .then(response=>response.json())
+        .then(data=>data.HeatmapPoints)
+        .then(generate_heatmap_layer)
+        .then(add_layer)
+    }
+
+    var add_layer = (layer) => {
+        map.addLayer(layer);
+    }
+
     var update_aside = (context) => {
         var source = $("#aside-template").html();
         var template = Handlebars.compile(source);
@@ -177,6 +210,8 @@ $(document).ready(function() {
             vectorPoints.getSource().addFeature(feature);
         });
     });
+
+    fetch_heatmap();
 });
 </script>
 {% endblock %}
