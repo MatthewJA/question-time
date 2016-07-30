@@ -39,7 +39,6 @@ def init_db():
                     bind=engine))
     Base = ext.declarative.declarative_base()
     Base.query = db_session.query_property()
-    Base.metadata.drop_all(bind=engine)
     return db_session, Base, engine
 
 
@@ -57,10 +56,12 @@ class Hansard(Base):
     def __init__(self, location, date, hits, hids, text):
         self.location = location
         self.date = datetime.datetime.strptime(date, '%Y-%m-%d')
+        self.hits = hits
         self.text = ' | '.join(text)
         self.hids = '|'.join(hids)
 
-Base.metadata.create_all(bind=engine)
+    def __repr__(self):
+        return '<Hansard {} {} {}>'.format(self.location, self.date, self.hits)
 
 
 def load_year(year, session):
@@ -100,7 +101,7 @@ def load_year(year, session):
             # Request all of the documents.
             for upto, docId in enumerate(docIds):
                 logging.debug('Requesting document: %s (%.2f%%)', docId,
-                              (upto + 1) / len(docIds))
+                              (upto + 1) / len(docIds) * 100)
                 r = requests.get(PS_URL + '/daily/fragment/' + docId)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 texts = soup.findAll(text=True)
@@ -120,5 +121,7 @@ def load_year(year, session):
         db.commit()
 
 if __name__ == '__main__':
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
     logging.root.setLevel(logging.DEBUG)
     load_year(2015, db)
