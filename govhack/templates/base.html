@@ -19,16 +19,18 @@
 <body>
 <div class="wrapper">
 	<header><h1>Question Time</h1></header>
-	<main>
-		{% block main %}
-		{% endblock %}
-	</main>
-	<aside>
-		<div id="aside-inner">
-		</div>
-	</aside>
+	<div>
+		<main>
+			{% block main %}
+			{% endblock %}
+		</main>
+		<aside>
+			<div id="aside-inner">
+			</div>
+		</aside>
+	</div>
+	<div class="push"></div>
 </div>
-<div class="push"></div>
 <footer class="footer">
 	<p>A GovHack 2016 project, presented by <span>';-- -</span>.<p>
 </footer>
