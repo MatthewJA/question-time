@@ -7,6 +7,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/ol3/3.17.1/ol.js" type="text/javascript"></script>
 <script type="text/javascript" src="//code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.10.3/babel.min.js"></script>
 <script id="aside-template" type="text/x-handlebars-template">
 <ul>
 {% raw %}
@@ -30,7 +31,7 @@
 {% endraw %}
 </ul>
 </script>
-<script type="text/javascript">
+<script type="text/babel">
 $(document).ready(function() {
     const HEATMAP_LAYER = 'HEATMAP_LAYER';
     const POI_LAYER = 'POI_LAYER';
