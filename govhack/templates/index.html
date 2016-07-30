@@ -32,6 +32,9 @@
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
+    const HEATMAP_LAYER = 'HEATMAP_LAYER';
+    const POI_LAYER = 'POI_LAYER';
+    const OSM_LAYER = 'OSM_LAYER';
 
     var state = {
         'town_selected': false,
@@ -86,7 +89,8 @@ $(document).ready(function() {
     };
 
     var osm_layer = new ol.layer.Tile({
-        source: new ol.source.OSM()
+        source: new ol.source.OSM(),
+        name: OSM_LAYER
     });
 
 
@@ -112,7 +116,8 @@ $(document).ready(function() {
         data.addFeatures(heatmap_features);
         var heatMapLayer = new ol.layer.Heatmap({
             source: data,
-            radius: 5
+            radius: 5,
+            name: HEATMAP_LAYER
         });
         return heatMapLayer;
     }
@@ -133,7 +138,8 @@ $(document).ready(function() {
 
         var pointsLayer = new ol.layer.Vector({
             source: data,
-            style: createPointStyleFunction()
+            style: createPointStyleFunction(),
+            name: POI_LAYER
         });
 
         return pointsLayer;
@@ -151,10 +157,10 @@ $(document).ready(function() {
     });
 
     map.on('click', function(evt) {
-        var feature = map.forEachFeatureAtPixel(evt.pixel, onFeatureClick);
+        var feature = map.forEachFeatureAtPixel(evt.pixel, on_feature_click, null, is_point_of_interest);
     });
 
-    var onFeatureClick = (feature, layer) => {
+    var on_feature_click = (feature, layer) => {
         var name = feature.getProperties().properties.name;
         console.log(name);
         fetch('/interesting_trends/'+name)
@@ -169,6 +175,10 @@ $(document).ready(function() {
             );
             update_aside(state);
         });
+    }
+
+    var is_point_of_interest = (layer) => {
+        return layer.get('name') === POI_LAYER;
     }
 
     var fetch_points_of_interest = () => {
