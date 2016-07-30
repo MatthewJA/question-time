@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title></title>
+	<meta charset=utf-8>
+	<meta name=description content="blah">
+	<meta name=viewport content="width=device-width, initial-scale=1.0">
+	{% assets "scss_all" %}
+		<link rel="stylesheet" type="text/css" href="{{ASSET_URL}}">
+	{% endassets %}
+</head>
+<body>
+<div class="wrapper">
+	<main>
+		{% block main %}
+		<h1>This is a main block</h1>
+		{% endblock %}
+	</main>
+</div>
+<div class="push"></div>
+<footer><p>Presented by <span>,;-- -</span>.</footer>
+</body>
+</html>
