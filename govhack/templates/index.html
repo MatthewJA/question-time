@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block main %}
 <div>
-    <h1>Question Time</h1>
     <div id="map" class="map"></div>
 </div>
 
@@ -9,21 +8,27 @@
 <script type="text/javascript" src="//code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
 <script id="aside-template" type="text/x-handlebars-template">
+<ul>
 {% raw %}
     {{#if town_selected }}
-    <div class="results-for">Interesting trends for <span class="place-name">{{town_name}}</span>
-        </div>
-    <ul>
-        {{#each suggested_results}}
+    <li class="results-for">
+        <i class="material-icons heading">room</i> Trends for <span class="place-name">{{town_name}}</span>
+    </li>
+    {{#each suggested_results}}
         <li>
-            {{title}}
+            <div class="title-item">
+                <i class="material-icons">description</i><span class="title-text">{{title}}</span>
+            </div>
+            <div class="description-item">
+                <p>{{description}}</p>
+            </div>
         </li>
-        {{/each}}
-    </ul>
+    {{/each}}
     {{else}}
-    <div class="nothing-selected">Nothing selected</div>
+    <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Please click an area...</span></li>
     {{/if}}
 {% endraw %}
+</ul>
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -79,7 +84,7 @@ $(document).ready(function() {
             properties: {name: label.toProperCase()}
         })
     };
-    
+
     points = {}
 
     var map_point_to_feature = (key) => {
@@ -151,7 +156,7 @@ $(document).ready(function() {
         var source = $("#aside-template").html();
         var template = Handlebars.compile(source);
         var html = template(context);
-        $('aside').html(html);
+        $('#aside-inner').html(html);
     }
 
     update_aside(state);
@@ -169,7 +174,6 @@ $(document).ready(function() {
         });
         new_features.forEach(feature => {
             transform_geometry(feature);
-
             vectorPoints.getSource().addFeature(feature);
         });
     });

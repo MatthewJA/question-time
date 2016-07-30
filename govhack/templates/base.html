@@ -8,6 +8,8 @@
 	{% assets "scss_all" %}
 		<link rel="stylesheet" type="text/css" href="{{ASSET_URL}}">
 	{% endassets %}
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 	<script type="text/javascript">
 	String.prototype.toProperCase = function () {
 	    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
@@ -16,12 +18,14 @@
 </head>
 <body>
 <div class="wrapper">
+	<header><h1>Question Time</h1></header>
 	<main>
 		{% block main %}
-		<h1>This is a main block</h1>
 		{% endblock %}
 	</main>
 	<aside>
+		<div id="aside-inner">
+		</div>
 	</aside>
 </div>
 <div class="push"></div>

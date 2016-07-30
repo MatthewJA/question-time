@@ -12,7 +12,7 @@ def index():
 
 @app.route('/interesting_trends/<place_name>')
 def interesting_trends(place_name):
-    one_place_name = models.InterestingTrend('The crisis facing %s' % (place_name), 'lol')
+    one_place_name = models.InterestingTrend('The crisis facing %s' % (place_name), 'There is a definitive crisis happening around the place.')
     return json.dumps({'InterestingTrends':[one_place_name.to_dict()]})
 
 
