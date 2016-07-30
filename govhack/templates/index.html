@@ -106,18 +106,22 @@ $(document).ready(function() {
         var heatmap_features = []
         var data = new ol.source.Vector();
         elements.forEach(element => {
-            var pt = new ol.geom.Point([element.lon, element.lat]);
-            var heatmap_feature = new ol.Feature({
-                geometry: pt,
-                weight: element.weight
-            });
-            transform_geometry(heatmap_feature);
-            heatmap_features.push(heatmap_feature);
+            var total_to_add = Math.max(1, Math.floor(element.weight/2));
+            for (var i = 0; i < total_to_add; i++) {
+                var pt = new ol.geom.Point([element.lon, element.lat]);
+                var heatmap_feature = new ol.Feature({
+                    geometry: pt,
+                    weight: element.weight
+                });
+                transform_geometry(heatmap_feature);
+                heatmap_features.push(heatmap_feature);
+            }
         });
         data.addFeatures(heatmap_features);
         var heatMapLayer = new ol.layer.Heatmap({
             source: data,
             radius: 5,
+            blur: 30,
             name: HEATMAP_LAYER
         });
         return heatMapLayer;
