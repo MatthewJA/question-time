@@ -1,8 +1,22 @@
 @import "normalize";
 @import "skeleton";
 @import "sticky-footer";
-
+@import "openlayers";
+@import "girder/girder";
 
 footer {
 	text-align: center;
+}
+.map {
+	height: 500px;
+	width: 100%;
+}
+main {
+	@include unit(two-thirds);
+}
+aside {
+	@include unit(third);
+}
+.nothing-selected, .results-for {
+	@extend h2;
 }

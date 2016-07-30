@@ -1,0 +1,315 @@
+//////////////////////////////
+// Base Scss and grid functionality
+
+// A list of unit names and corresponding widths required by Girder
+$units:'half' 50%,
+				'third' 33.333%,
+				'two-thirds' 66.666%,
+				'fourth' 25%,
+				'three-fourths' 75%,
+				'fifth' 20%,
+				'two-fifths' 40%,
+				'three-fifths' 60%,
+				'four-fifths' 80%,
+				'sixth' 16.6666%,
+				'five-sixths' 83.3333%,
+				'golden-small' 38.2716%,
+				'golden-large' 61.7283%,
+				'whole' 100%;
+
+
+// Mixin for unit widths (Optimize @if and add func for return values)
+@mixin unit($width:whole, $addgutters:true) {
+
+	@if $width == 'half' or $width == 'two-fourths' {
+		@extend %half;
+	}
+	@else if $width == 'third' or $width == 'two-sixths' {
+		@extend %third;
+	}
+	@else if $width == 'two-thirds' or $width == 'four-sixths' {
+		@extend %two-thirds;
+	}
+	@else if $width == 'fourth' {
+		@extend %fourth;
+	}
+	@else if $width == 'three-fourths' {
+		@extend %three-fourths;
+	}
+	@else if $width == 'fifth' {
+		@extend %fifth;
+	}
+	@else if $width == 'two-fifths' {
+		@extend %two-fifths;
+	}
+	@else if $width == 'three-fifths' {
+		@extend %three-fifths;
+	}
+	@else if $width == 'four-fifths' {
+		@extend %four-fifths;
+	}
+	@else if $width == 'sixth' {
+		@extend %sixth;
+	}
+	@else if $width == 'five-sixths' {
+		@extend %five-sixths;
+	}
+	@else if $width == 'golden-small' {
+		@extend %golden-small;
+	}
+	@else if $width == 'golden-large' {
+		@extend %golden-large;
+	}
+	@else if $width == 'whole' {
+		@extend %whole;
+
+		@if $use-breakpoint {
+			@include breakpoint($single-column) {
+				padding-right: 0;
+			}
+		}
+		@else {
+			@include media-query(10em, $small-breakpoint) {
+				padding-right: 0;
+			}
+		}
+	}
+	@else {
+		@warn '"#{$width}" is not a valid width for the unit mixin (try "half" or "three-fourths" instead). Defaulting to "whole" unit.';
+	}
+
+	// Remove the unit $gutters when specified
+	@if $addgutters == false {
+		@extend %removegutters;
+	}
+
+}
+
+// Extendable placeholders for our unit mixin
+%unit {
+	float: left;
+	padding: $gutters / 2;
+}
+%removegutters {padding: 0;}
+
+%half           { width: 50%;
+	@extend %unit; }
+%third      { width: 33.3332%;
+	@extend %unit; }
+%two-thirds     { width: 66.6665%;
+	@extend %unit; }
+%fourth    { width: 25%;
+	@extend %unit; }
+%three-fourths { width: 75%;
+	@extend %unit; }
+%fifth      { width: 20%;
+	@extend %unit; }
+%two-fifths     { width: 40%;
+	@extend %unit; }
+%three-fifths   { width: 60%;
+	@extend %unit; }
+%four-fifths    { width: 80%;
+	@extend %unit; }
+%sixth      { width: 16.6666%;
+	@extend %unit; }
+%five-sixths      { width: 83.3333%;
+	@extend %unit; }
+%golden-small   { width: 38.2716%;
+	@extend %unit; }
+%golden-large   { width: 61.7283%;
+	@extend %unit; }
+%whole {
+	width: 100%;
+	padding: $gutters /2;
+}
+
+
+// Generate silent rows anywhere without needing a specific class
+@mixin row($isRelative: false, $padding:0) {
+  @if $isRelative {
+    position: relative;
+  }
+
+	@if $padding > 0 {
+		padding: $padding;
+	}
+
+	clear: both;
+	display: block;
+
+	// Automagic clearing for rows
+	&:after {clear: both;}
+
+	&:before, &:after {
+		display: table;
+		content: "";
+		line-height: 0;
+	}
+
+	// Option to add outer gutters back in to keep third+ units even
+	&.equal-units {
+		> :first-of-type {padding-left: $gutters / 2;}
+		> :last-child {padding-right: $gutters / 2;}
+	}
+}
+
+// Make our default row an extendable placeholder
+%row {@include row($row-padding);}
+
+
+// Extend containers with padding and a theme background
+@mixin container($max-width: $container-max-width, $margins: $container-margins) {
+		margin: $container-margins;
+		max-width: $container-max-width;
+}
+
+%container {@include container($container-max-width, $container-margins);}
+
+
+// Outputs the minimum CSS required to handle units and self-clearing rows unless this is set in the config:
+// $silent-classes: true;
+@if $silent-classes == false {
+
+	// Set up the container alignment and max-width
+	// Some of the few lines of CSS that Girder outputs by default
+	.container {
+		margin: $container-margins;
+		max-width: $container-max-width;
+	}
+
+	// Rows can be cleared using a class of your choice if preferred:
+	.#{$row-class} {
+		padding: $row-padding;
+		clear: both;
+		display: block;
+
+		// Automagic clearing for rows
+		&:after {clear: both;}
+
+		&:before, &:after {
+			display: table;
+			content: "";
+			line-height: 0;
+		}
+
+		&.no-gutters, &.no-padding {padding: 0;}
+	}
+}
+
+// Extend to re-introduce left/right padding in nested outer units
+%equal-units {
+	> :first-of-type {padding-left: $gutters / 2;}
+	> :last-child {padding-right: $gutters / 2;}
+}
+
+
+// Girder Responsive unit Mixin uses a cleaner syntax (until maps in Sass 3.3)
+// Separate unit mixin for media queries for additional control over gutters
+@mixin responsive-unit($size:whole, $gutters:false) {
+	@each $unit in $units {
+		@if $size == nth($unit, 1) {
+			$length: length($unit);
+			$size: whole !default;
+
+			@for $i from 2 through $length {
+				// If it's the first item, override it
+				@if $i == 2 {
+					$size: nth($unit, $i);
+				}
+				// Else, join $size
+				@else {
+					$size: join($size, nth($unit, $i));
+				}
+			}
+			// Send this to our unit Mixin
+			@include girder-unit($size, $gutters);
+		}
+	}
+}
+
+// This separates our unit mixin and css to keep things tidy
+@mixin girder-unit ($width, $addgutters) {
+	@if $silent-classes == false {
+		.#{$row-class} & {
+			float: left;
+			// reverse gutters logic to prevent overriding false
+			@if $addgutters == true {
+				padding: $gutters / 2;
+			}
+			// Collect our unit size
+			width: $width;
+		}
+	}
+	@else {
+		float: left;
+		// reverse gutters logic to prevent overriding false
+		@if $addgutters == true {
+			padding: $gutters / 2;
+		}
+		// Collect our unit size
+		width: $width;
+	}
+}
+
+
+// Push units up to four eighths including gutters (experimental)
+// Nested rows should contain homogeneous units with em-based gutters
+@mixin pushover-units {
+	@if $html-classes == false {
+		$gutterpercent: $gutters * $em-base / 100;
+		.push-one,
+		.push-two,
+		.push-three,
+		.push-four {
+			position: relative;
+		}
+		// We'll attempt to align with eights going up to half-page
+		.push-one { left: 12.5% + strip-unit($gutterpercent); }
+		.push-two { left: 25% + strip-unit($gutterpercent); }
+		.push-three { left: 37.5% + strip-unit($gutterpercent); }
+		.push-four { left: 50% + strip-unit($gutterpercent); }
+	}
+}
+
+@if $include-extras == true {
+	// Optional: classes to push units (.push-one to .push-four)
+	@include pushover-units;
+}
+
+
+// Only include these classes if the option exists
+@if $html-classes == true {
+	$units: (whole 100%), (half 50%), (third 33.3332%), (two-thirds 66.6665%), (fourth 25%), (three-fourths 75%), (fifth 20%), (two-fifths 40%), (three-fifths 60%), (four-fifths 80%), (sixth 16.6666%), (five-sixths 83.3333%), (golden-small 38.2716%), (golden-large 61.7283%);
+
+	@each $unit in $units {
+	  .#{nth($unit, 1)} {
+	    width: #{nth($unit, 2)};
+	    @extend .unit;
+	  }
+	}
+
+	.unit {
+		float: left;
+		padding: $gutters / 2;
+		width: 100%;
+
+		&:first-of-type {padding-left: $gutters;}
+		&:last-child {padding-right: $gutters;}
+
+		.#{$row-class} &:first-of-type {padding-left: 0;}
+		.#{$row-class} &:last-child {padding-right: 0;}
+	}
+
+	$gutterpercent: $gutters * $em-base / 100;
+	.push-one,
+	.push-two,
+	.push-three,
+	.push-four {
+		position: relative;
+	}
+	// We'll attempt to align with eights going up to half-page
+	.push-one { left: 12.5% + strip-unit($gutterpercent); }
+	.push-two { left: 25% + strip-unit($gutterpercent); }
+	.push-three { left: 37.5% + strip-unit($gutterpercent); }
+	.push-four { left: 50% + strip-unit($gutterpercent); }
+}

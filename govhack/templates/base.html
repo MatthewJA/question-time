@@ -8,6 +8,11 @@
 	{% assets "scss_all" %}
 		<link rel="stylesheet" type="text/css" href="{{ASSET_URL}}">
 	{% endassets %}
+	<script type="text/javascript">
+	String.prototype.toProperCase = function () {
+	    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+	};
+	</script>
 </head>
 <body>
 <div class="wrapper">
@@ -16,6 +21,8 @@
 		<h1>This is a main block</h1>
 		{% endblock %}
 	</main>
+	<aside>
+	</aside>
 </div>
 <div class="push"></div>
 <footer><p>Presented by <span>,;-- -</span>.</footer>
