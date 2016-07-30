@@ -85,22 +85,6 @@ $(document).ready(function() {
         })
     };
 
-    /*points = {}
-
-    var map_point_to_feature = (key) => {
-        return create_point(points[key][1], points[key][0], key);
-    };
-
-
-    var features = Object.keys(points).map(map_point_to_feature);
-
-    var vectorPoints = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: features
-        }),
-        style: createPointStyleFunction()
-    });*/
-
     var osm_layer = new ol.layer.Tile({
         source: new ol.source.OSM()
     });
