@@ -11,7 +11,7 @@
 <script id="aside-template" type="text/x-handlebars-template">
 {% raw %}
     {{#if town_selected }}
-    <div class="results-for">Interesting trends for: <span class="place-name">{{town_name}}</span>
+    <div class="results-for">Interesting trends for <span class="place-name">{{town_name}}</span>
         </div>
     <ul>
         {{#each suggested_results}}
@@ -32,6 +32,7 @@ $(document).ready(function() {
         'town_selected': false,
         'town_name': '',
         'suggested_results': [],
+        'points_of_interest': [],
     }
 
     var styleSet = {
@@ -79,7 +80,8 @@ $(document).ready(function() {
         })
     };
 
-    var points = {"stockrington": [-32.86298683993768, 151.57468382487644], "springvale": [-33.41282142595568, 150.1145301911546], "toongabbie": [-33.78677444960307, 150.95176876020577], "wagga wagga": [-35.10265460013819, 147.3612748636144], "carwell": [-32.85009139502486, 149.9154630592874], "bannaby": [-34.423793238745645, 149.97699367009673], "mount david": [-33.823913411140424, 149.62660511380224], "glebe": [-33.87756687243126, 151.18634128065332]};
+    /*var points = {"stockrington": [-32.86298683993768, 151.57468382487644], "springvale": [-33.41282142595568, 150.1145301911546], "toongabbie": [-33.78677444960307, 150.95176876020577], "wagga wagga": [-35.10265460013819, 147.3612748636144], "carwell": [-32.85009139502486, 149.9154630592874], "bannaby": [-34.423793238745645, 149.97699367009673], "mount david": [-33.823913411140424, 149.62660511380224], "glebe": [-33.87756687243126, 151.18634128065332]};*/
+    points = {}
 
     var map_point_to_feature = (key) => {
         return create_point(points[key][1], points[key][0], key);
@@ -127,14 +129,23 @@ $(document).ready(function() {
     var onFeatureClick = (feature, layer) => {
         var name = feature.getProperties().properties.name;
         console.log(name);
-        state = Object.assign({}, state, 
-            {
-                'town_selected': true, 
-                'town_name': name,
-                'suggested_results': [{'title': 'The crisis facing '+ name}]
-            }
-        );
-        update_aside(state);
+        fetch('/interesting_trends/'+name)
+        .then(response => response.json())
+        .then(data => {
+            state = Object.assign({}, state, 
+                {
+                    'town_selected': true, 
+                    'town_name': name,
+                    'suggested_results': data.InterestingTrends
+                }
+            );
+            update_aside(state);
+        });
+    }
+
+    var fetch_points_of_interest = () => {
+        return fetch('/points_of_interest')
+        .then(response=>response.json())
     }
 
     var update_aside = (context) => {
@@ -145,6 +156,24 @@ $(document).ready(function() {
     }
 
     update_aside(state);
+
+    fetch_points_of_interest()
+    .then(data => {
+        state = Object.assign({}, state,
+            {
+                'points_of_interest': data.PointsOfInterest
+            }
+        );
+        // Initialise map
+        new_features = Object.keys(state.points_of_interest).map( key => {
+            return create_point(state.points_of_interest[key][1], state.points_of_interest[key][0], key);
+        });
+        new_features.forEach(feature => {
+            transform_geometry(feature);
+
+            vectorPoints.getSource().addFeature(feature);
+        });
+    });
 });
 </script>
 {% endblock %}
