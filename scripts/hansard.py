@@ -69,6 +69,12 @@ def load_year(year, session):
     tocsYear = requests.get(PS_URL + 'year/{}'.format(year))
     for i in tocsYear.json():
         date = i['date']
+        trial_date = datetime.datetime.strptime(date, '%Y-%m-%d')
+        comp_date = datetime.datetime.strptime('2016-02-24', '%Y-%m-%d')
+        if trial_date > comp_date:
+            logging.warning('Skipping date: %s', date)
+            continue
+
         # Maps places to [number of hits, {documents}, [text blocks]].
         hits = collections.defaultdict(lambda: [0, set(), []])
         for j in i['Events']:
@@ -120,8 +126,9 @@ def load_year(year, session):
             db.add(h)
         db.commit()
 
+
 if __name__ == '__main__':
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+    # Base.metadata.drop_all(bind=engine)
+    # Base.metadata.create_all(bind=engine)
     logging.root.setLevel(logging.DEBUG)
-    load_year(2015, db)
+    load_year(2016, db)
