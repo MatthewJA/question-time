@@ -2,6 +2,8 @@ import json
 
 from flask import render_template
 
+import os
+
 from . import app
 from . import models
 
@@ -25,3 +27,8 @@ def points_of_interest():
 def heatmap_points():
     with open('govhack/heatmap_sample.json') as f:
         return f.read()
+
+
+@app.route('/.well-known/acme-challenge/<id>')
+def acme_challenge(id):
+	return os.environ.get('ACME_CHALLENGE', 'NO ACME CHALLENGE CONFIGURED')
