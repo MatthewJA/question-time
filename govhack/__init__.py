@@ -1,6 +1,6 @@
 from flask import Flask, url_for, redirect
 
-import assets
+from . import assets
 
 app = Flask(__name__, instance_relative_config=True)
 

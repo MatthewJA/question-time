@@ -1,8 +1,9 @@
-from govhack import app
-from flask import render_template
-import models
-
 import json
+
+from flask import render_template
+
+from . import app
+from . import models
 
 @app.route('/')
 def index():
