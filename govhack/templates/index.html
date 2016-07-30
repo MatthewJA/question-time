@@ -76,7 +76,7 @@ $(document).ready(function() {
         }
     }
 
-    var create_point = (lon, lat, label) => {
+    var create_point_feature = (lon, lat, label) => {
         return new ol.Feature({
             geometry: new ol.geom.Point(
                 [lon, lat]
@@ -85,7 +85,7 @@ $(document).ready(function() {
         })
     };
 
-    points = {}
+    /*points = {}
 
     var map_point_to_feature = (key) => {
         return create_point(points[key][1], points[key][0], key);
@@ -99,7 +99,7 @@ $(document).ready(function() {
             features: features
         }),
         style: createPointStyleFunction()
-    });
+    });*/
 
     var osm_layer = new ol.layer.Tile({
         source: new ol.source.OSM()
@@ -126,20 +126,39 @@ $(document).ready(function() {
             heatmap_features.push(heatmap_feature);
         });
         data.addFeatures(heatmap_features);
-        heatMapLayer = new ol.layer.Heatmap({
+        var heatMapLayer = new ol.layer.Heatmap({
             source: data,
             radius: 5
         });
         return heatMapLayer;
     }
 
-    features.forEach(transform_geometry);
+    var generate_points_layer = (mapping) => {
+
+        var points_features = [];
+        var data = new ol.source.Vector();
+        Object.keys(mapping).forEach(key => {
+            var point_feature = create_point_feature(
+                mapping[key][1], 
+                mapping[key][0], 
+                key);
+            transform_geometry(point_feature);
+            points_features.push(point_feature);
+        });
+        data.addFeatures(points_features);
+
+        var pointsLayer = new ol.layer.Vector({
+            source: data,
+            style: createPointStyleFunction()
+        });
+
+        return pointsLayer;
+    }
 
     var map = new ol.Map({
         target: 'map',
         layers: [
-        osm_layer,
-        vectorPoints
+        osm_layer
         ],
         view: new ol.View({
             center: ol.proj.fromLonLat([147.01, -32.09]),
@@ -171,6 +190,9 @@ $(document).ready(function() {
     var fetch_points_of_interest = () => {
         return fetch('/points_of_interest')
         .then(response=>response.json())
+        .then(data=>data.PointsOfInterest)
+        .then(generate_points_layer)
+        .then(add_layer)
     }
 
     var fetch_heatmap = () => {
@@ -194,22 +216,7 @@ $(document).ready(function() {
 
     update_aside(state);
 
-    fetch_points_of_interest()
-    .then(data => {
-        state = Object.assign({}, state,
-            {
-                'points_of_interest': data.PointsOfInterest
-            }
-        );
-        // Initialise map
-        new_features = Object.keys(state.points_of_interest).map( key => {
-            return create_point(state.points_of_interest[key][1], state.points_of_interest[key][0], key);
-        });
-        new_features.forEach(feature => {
-            transform_geometry(feature);
-            vectorPoints.getSource().addFeature(feature);
-        });
-    });
+    fetch_points_of_interest();
 
     fetch_heatmap();
 });
