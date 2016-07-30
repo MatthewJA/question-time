@@ -1,13 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title></title>
+	<title>Question Time | GovHack 2016</title>
 	<meta charset=utf-8>
-	<meta name=description content="blah">
+	<meta name=description content="This is a GovHack 2016 project that displays interesting data scraped from the NS Hansard files.">
 	<meta name=viewport content="width=device-width, initial-scale=1.0">
 	{% assets "scss_all" %}
 		<link rel="stylesheet" type="text/css" href="{{ASSET_URL}}">
 	{% endassets %}
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 	<script type="text/javascript">
 	String.prototype.toProperCase = function () {
 	    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
@@ -16,15 +18,21 @@
 </head>
 <body>
 <div class="wrapper">
-	<main>
-		{% block main %}
-		<h1>This is a main block</h1>
-		{% endblock %}
-	</main>
-	<aside>
-	</aside>
+	<header><h1>Question Time</h1></header>
+	<div>
+		<main>
+			{% block main %}
+			{% endblock %}
+		</main>
+		<aside>
+			<div id="aside-inner">
+			</div>
+		</aside>
+	</div>
+	<div class="push"></div>
 </div>
-<div class="push"></div>
-<footer><p>Presented by <span>,;-- -</span>.</footer>
+<footer class="footer">
+	<p>A GovHack 2016 project, presented by <span>';-- -</span>.<p>
+</footer>
 </body>
 </html>

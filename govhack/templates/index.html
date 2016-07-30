@@ -1,32 +1,44 @@
 {% extends "base.html" %}
 {% block main %}
 <div>
-    <h1>Question Time</h1>
     <div id="map" class="map"></div>
 </div>
 
-<script src="http://openlayers.org/en/v3.17.1/build/ol.js" type="text/javascript"></script>
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
-<script type="text/javascript" src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-v4.0.5.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/ol3/3.17.1/ol.js" type="text/javascript"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-3.1.0.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.10.3/babel.min.js"></script>
 <script id="aside-template" type="text/x-handlebars-template">
+<ul>
 {% raw %}
     {{#if town_selected }}
-    <div class="results-for">Interesting trends for <span class="place-name">{{town_name}}</span>
-        </div>
-    <ul>
-        {{#each suggested_results}}
+    <li class="results-for">
+        <i class="material-icons heading">room</i> Trends for <span class="place-name">{{town_name}}</span>
+    </li>
+    {{#each suggested_results}}
         <li>
-            {{title}}
+            <div class="title-item">
+                <i class="material-icons">description</i><span class="title-text">{{title}}</span>
+            </div>
+            <div class="description-item">
+                <p>{{description}}</p>
+            </div>
         </li>
-        {{/each}}
-    </ul>
+    {{/each}}
     {{else}}
-    <div class="nothing-selected">Nothing selected</div>
+    <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Please click an area...</span></li>
     {{/if}}
 {% endraw %}
+</ul>
 </script>
-<script type="text/javascript">
+<script type="text/babel">
+
+const GRADIENT_COLORS = ["#000003", "#000004", "#000006", "#010007", "#010109", "#01010b", "#02010e", "#020210", "#030212", "#040314", "#040316", "#050418", "#06041b", "#07051d", "#08061f", "#090621", "#0a0723", "#0b0726", "#0d0828", "#0e082a", "#0f092d", "#10092f", "#120a32", "#130a34", "#140b36", "#160b39", "#170b3b", "#190b3e", "#1a0b40", "#1c0c43", "#1d0c45", "#1f0c47", "#200c4a", "#220b4c", "#240b4e", "#260b50", "#270b52", "#290b54", "#2b0a56", "#2d0a58", "#2e0a5a", "#300a5c", "#32095d", "#34095f", "#350960", "#370961", "#390962", "#3b0964", "#3c0965", "#3e0966", "#400966", "#410967", "#430a68", "#450a69", "#460a69", "#480b6a", "#4a0b6a", "#4b0c6b", "#4d0c6b", "#4f0d6c", "#500d6c", "#520e6c", "#530e6d", "#550f6d", "#570f6d", "#58106d", "#5a116d", "#5b116e", "#5d126e", "#5f126e", "#60136e", "#62146e", "#63146e", "#65156e", "#66156e", "#68166e", "#6a176e", "#6b176e", "#6d186e", "#6e186e", "#70196e", "#72196d", "#731a6d", "#751b6d", "#761b6d", "#781c6d", "#7a1c6d", "#7b1d6c", "#7d1d6c", "#7e1e6c", "#801f6b", "#811f6b", "#83206b", "#85206a", "#86216a", "#88216a", "#892269", "#8b2269", "#8d2369", "#8e2468", "#902468", "#912567", "#932567", "#952666", "#962666", "#982765", "#992864", "#9b2864", "#9c2963", "#9e2963", "#a02a62", "#a12b61", "#a32b61", "#a42c60", "#a62c5f", "#a72d5f", "#a92e5e", "#ab2e5d", "#ac2f5c", "#ae305b", "#af315b", "#b1315a", "#b23259", "#b43358", "#b53357", "#b73456", "#b83556", "#ba3655", "#bb3754", "#bd3753", "#be3852", "#bf3951", "#c13a50", "#c23b4f", "#c43c4e", "#c53d4d", "#c73e4c", "#c83e4b", "#c93f4a", "#cb4049", "#cc4148", "#cd4247", "#cf4446", "#d04544", "#d14643", "#d24742", "#d44841", "#d54940", "#d64a3f", "#d74b3e", "#d94d3d", "#da4e3b", "#db4f3a", "#dc5039", "#dd5238", "#de5337", "#df5436", "#e05634", "#e25733", "#e35832", "#e45a31", "#e55b30", "#e65c2e", "#e65e2d", "#e75f2c", "#e8612b", "#e9622a", "#ea6428", "#eb6527", "#ec6726", "#ed6825", "#ed6a23", "#ee6c22", "#ef6d21", "#f06f1f", "#f0701e", "#f1721d", "#f2741c", "#f2751a", "#f37719", "#f37918", "#f47a16", "#f57c15", "#f57e14", "#f68012", "#f68111", "#f78310", "#f7850e", "#f8870d", "#f8880c", "#f88a0b", "#f98c09", "#f98e08", "#f99008", "#fa9107", "#fa9306", "#fa9506", "#fa9706", "#fb9906", "#fb9b06", "#fb9d06", "#fb9e07", "#fba007", "#fba208", "#fba40a", "#fba60b", "#fba80d", "#fbaa0e", "#fbac10", "#fbae12", "#fbb014", "#fbb116", "#fbb318", "#fbb51a", "#fbb71c", "#fbb91e", "#fabb21", "#fabd23", "#fabf25", "#fac128", "#f9c32a", "#f9c52c", "#f9c72f", "#f8c931", "#f8cb34", "#f8cd37", "#f7cf3a", "#f7d13c", "#f6d33f", "#f6d542", "#f5d745", "#f5d948", "#f4db4b", "#f4dc4f", "#f3de52", "#f3e056", "#f3e259", "#f2e45d", "#f2e660", "#f1e864", "#f1e968", "#f1eb6c", "#f1ed70", "#f1ee74", "#f1f079", "#f1f27d", "#f2f381", "#f2f485", "#f3f689", "#f4f78d", "#f5f891", "#f6fa95", "#f7fb99", "#f9fc9d", "#fafda0", "#fcfea4"];
+
 $(document).ready(function() {
+    const HEATMAP_LAYER = 'HEATMAP_LAYER';
+    const POI_LAYER = 'POI_LAYER';
+    const OSM_LAYER = 'OSM_LAYER';
 
     var state = {
         'town_selected': false,
@@ -71,7 +83,7 @@ $(document).ready(function() {
         }
     }
 
-    var create_point = (lon, lat, label) => {
+    var create_point_feature = (lon, lat, label) => {
         return new ol.Feature({
             geometry: new ol.geom.Point(
                 [lon, lat]
@@ -80,26 +92,12 @@ $(document).ready(function() {
         })
     };
 
-    /*var points = {"stockrington": [-32.86298683993768, 151.57468382487644], "springvale": [-33.41282142595568, 150.1145301911546], "toongabbie": [-33.78677444960307, 150.95176876020577], "wagga wagga": [-35.10265460013819, 147.3612748636144], "carwell": [-32.85009139502486, 149.9154630592874], "bannaby": [-34.423793238745645, 149.97699367009673], "mount david": [-33.823913411140424, 149.62660511380224], "glebe": [-33.87756687243126, 151.18634128065332]};*/
-    points = {}
-
-    var map_point_to_feature = (key) => {
-        return create_point(points[key][1], points[key][0], key);
-    };
-
-
-    var features = Object.keys(points).map(map_point_to_feature);
-
-    var vectorPoints = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: features
-        }),
-        style: createPointStyleFunction()
-    });
-
     var osm_layer = new ol.layer.Tile({
-        source: new ol.source.OSM()
+        source: new ol.source.OSM(),
+        name: OSM_LAYER
     });
+
+
 
     function transform_geometry(element) {
         var current_projection = new ol.proj.Projection({code: "EPSG:4326"});
@@ -107,26 +105,71 @@ $(document).ready(function() {
         element.getGeometry().transform(current_projection, new_projection);
     };
 
+    var generate_heatmap_layer = (elements) => {
+        var heatmap_features = []
+        var data = new ol.source.Vector();
+        elements.forEach(element => {
+            var total_to_add = Math.max(1, Math.floor(element.weight/2));
+            for (var i = 0; i < total_to_add; i++) {
+                var pt = new ol.geom.Point([element.lon, element.lat]);
+                var heatmap_feature = new ol.Feature({
+                    geometry: pt,
+                    weight: element.weight
+                });
+                transform_geometry(heatmap_feature);
+                heatmap_features.push(heatmap_feature);
+            }
+        });
+        data.addFeatures(heatmap_features);
+        var heatMapLayer = new ol.layer.Heatmap({
+            source: data,
+            radius: 5,
+            blur: 30,
+            name: HEATMAP_LAYER,
+            gradient: GRADIENT_COLORS,
+        });
+        return heatMapLayer;
+    }
 
-    features.forEach(transform_geometry);
+    var generate_points_layer = (mapping) => {
+
+        var points_features = [];
+        var data = new ol.source.Vector();
+        Object.keys(mapping).forEach(key => {
+            var point_feature = create_point_feature(
+                mapping[key][1], 
+                mapping[key][0], 
+                key);
+            transform_geometry(point_feature);
+            points_features.push(point_feature);
+        });
+        data.addFeatures(points_features);
+
+        var pointsLayer = new ol.layer.Vector({
+            source: data,
+            style: createPointStyleFunction(),
+            name: POI_LAYER
+        });
+
+        return pointsLayer;
+    }
 
     var map = new ol.Map({
         target: 'map',
         layers: [
-        osm_layer,
-        vectorPoints
+        osm_layer
         ],
         view: new ol.View({
-            center: ol.proj.fromLonLat([133.25, -24.15]),
-            zoom: 4
+            center: ol.proj.fromLonLat([147.01, -32.09]),
+            zoom: 6
         })
     });
 
     map.on('click', function(evt) {
-        var feature = map.forEachFeatureAtPixel(evt.pixel, onFeatureClick);
+        var feature = map.forEachFeatureAtPixel(evt.pixel, on_feature_click, null, is_point_of_interest);
     });
 
-    var onFeatureClick = (feature, layer) => {
+    var on_feature_click = (feature, layer) => {
         var name = feature.getProperties().properties.name;
         console.log(name);
         fetch('/interesting_trends/'+name)
@@ -143,37 +186,42 @@ $(document).ready(function() {
         });
     }
 
+    var is_point_of_interest = (layer) => {
+        return layer.get('name') === POI_LAYER;
+    }
+
     var fetch_points_of_interest = () => {
         return fetch('/points_of_interest')
         .then(response=>response.json())
+        .then(data=>data.PointsOfInterest)
+        .then(generate_points_layer)
+        .then(add_layer)
+    }
+
+    var fetch_heatmap = () => {
+        return fetch('/heatmap_points')
+        .then(response=>response.json())
+        .then(data=>data.HeatmapPoints)
+        .then(generate_heatmap_layer)
+        .then(add_layer)
+    }
+
+    var add_layer = (layer) => {
+        map.addLayer(layer);
     }
 
     var update_aside = (context) => {
         var source = $("#aside-template").html();
         var template = Handlebars.compile(source);
         var html = template(context);
-        $('aside').html(html);
+        $('#aside-inner').html(html);
     }
 
     update_aside(state);
 
-    fetch_points_of_interest()
-    .then(data => {
-        state = Object.assign({}, state,
-            {
-                'points_of_interest': data.PointsOfInterest
-            }
-        );
-        // Initialise map
-        new_features = Object.keys(state.points_of_interest).map( key => {
-            return create_point(state.points_of_interest[key][1], state.points_of_interest[key][0], key);
-        });
-        new_features.forEach(feature => {
-            transform_geometry(feature);
+    fetch_points_of_interest();
 
-            vectorPoints.getSource().addFeature(feature);
-        });
-    });
+    fetch_heatmap();
 });
 </script>
 {% endblock %}
