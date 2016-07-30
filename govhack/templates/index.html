@@ -1,7 +1,108 @@
 {% extends "base.html" %}
 {% block main %}
 <div class="container">
-	<h1>welcome 2 govhack</h1>
-	<p>lol</p>
+    <h1>lol</h1>
+    <div id="map" class="map"></div>
 </div>
+
+<script src="http://openlayers.org/en/v3.17.1/build/ol.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+
+var styleSet = {
+    text: 'Blah',
+    align: 'center',
+    baseline: 'middle',
+    font: 'Arial',
+    size: '12px',
+    color: '#FFFFFF',
+    outlineWidth: '3px',
+    maxreso: 1200
+};
+
+var createTextStyle = function(feature, resolution, dom) {
+    debugger;
+    return new ol.style.Text({
+        textAlign: 'center',
+        textBaseline: 'middle',
+        font: 'Arial',
+        text: feature.getProperties().properties.name,
+        offsetY: -20,
+        fill: new ol.style.Fill({color: 'black'}),
+    })
+}
+
+var createPointStyleFunction = function() {
+    return function(feature, resolution) {
+        var style = new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 5,
+                fill: new ol.style.Fill({color: 'rgba(255,0,0,0.6)'}),
+                stroke: new ol.style.Stroke({color: 'red', width: 3})
+            }),
+            text: createTextStyle(feature, resolution, styleSet)
+        });
+        return [style];
+    }
+}
+
+var create_point = (lon, lat, label) => {
+    return new ol.Feature({
+        geometry: new ol.geom.Point(
+            [lon, lat]
+        ),
+        properties: {name: label}
+    })
+};
+
+var points = {"stockrington": [-32.86298683993768, 151.57468382487644], "springvale": [-33.41282142595568, 150.1145301911546], "toongabbie": [-33.78677444960307, 150.95176876020577], "wagga wagga": [-35.10265460013819, 147.3612748636144], "carwell": [-32.85009139502486, 149.9154630592874], "bannaby": [-34.423793238745645, 149.97699367009673], "mount david": [-33.823913411140424, 149.62660511380224], "glebe": [-33.87756687243126, 151.18634128065332]};
+
+var map_point_to_feature = (key) => {
+    return create_point(points[key][1], points[key][0], key);
+};
+
+
+var features = Object.keys(points).map(map_point_to_feature);
+
+var vectorPoints = new ol.layer.Vector({
+    source: new ol.source.Vector({
+        features: features
+    }),
+    style: createPointStyleFunction()
+});
+
+var osm_layer = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
+
+function transform_geometry(element) {
+    var current_projection = new ol.proj.Projection({code: "EPSG:4326"});
+    var new_projection = osm_layer.getSource().getProjection();
+    element.getGeometry().transform(current_projection, new_projection);
+};
+
+
+features.forEach(transform_geometry);
+
+var map = new ol.Map({
+    target: 'map',
+    layers: [
+        osm_layer,
+        vectorPoints
+    ],
+    view: new ol.View({
+        center: ol.proj.fromLonLat([133.25, -24.15]),
+        zoom: 4
+    })
+});
+
+map.on('click', function(evt) {
+    var feature = map.forEachFeatureAtPixel(evt.pixel, onFeatureClick);
+});
+
+var onFeatureClick = (feature, layer) => {
+    console.log(feature);
+}
+
+</script>
 {% endblock %}

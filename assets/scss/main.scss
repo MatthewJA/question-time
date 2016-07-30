@@ -1,8 +1,12 @@
 @import "normalize";
 @import "skeleton";
 @import "sticky-footer";
-
+@import "openlayers";
 
 footer {
 	text-align: center;
+}
+.map {
+	height: 500px;
+	width: 100%;
 }
