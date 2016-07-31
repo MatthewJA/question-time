@@ -1,11 +1,13 @@
 """Models for the data processing scripts."""
 
+import os
+
 import sqlalchemy as sa
 import sqlalchemy.ext as ext
 import sqlalchemy.ext.declarative
 import sqlalchemy.orm as orm
 
-engine = sa.create_engine(os.environ[POSTGRES_URI])
+engine = sa.create_engine(os.environ['POSTGRES_URI'])
 db_session = orm.scoped_session(
         orm.sessionmaker(
                 autocommit=False,
