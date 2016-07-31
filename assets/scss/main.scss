@@ -36,9 +36,14 @@ aside {
 		color: #595959;
 
 		li {
+
 			list-style-type: none;
 			border-bottom: 1px solid #C5C5C5;
 			padding-bottom: 1em;
+
+			&:last-child {
+				border-bottom: 0px;
+			}
 
 			.material-icons, .title-text {
 				display: inline-block;
@@ -52,10 +57,13 @@ aside {
 			}
 			p {
 				margin-bottom: 1rem;
-				font-style: italic;
 			}
 
+			.description-item {
+				font-style: italic;
+			}
 			.title-item {
+				font-weight: bold;
 				margin-bottom: 1em;
 			}
 		}
@@ -102,4 +110,16 @@ header {
 
 button.date.selected {
 	background-color: $material-colour-secondary;
+}
+
+.map-info .map-container .inner {
+	margin: 0 auto;
+	float: none;
+}
+.map-info {
+	margin-top: 3em;
+	h2 {
+		color: $material-colour-main;
+		text-align: center;
+	}
 }
