@@ -89,7 +89,14 @@ header {
 	text-align: center;
 	margin-bottom: 1em;
 	box-shadow: 0px 3px 3px 0px rgba(181, 181, 181, 0.57);
-	font-family: "Roboto";
+	font-family: "Roboto Slab";
+	.material-icons {
+		font-size: 5rem;
+	}
+	span, i {
+		display: inline-block;
+		vertical-align: middle;
+	}
 }
 
 .introduction-container {
