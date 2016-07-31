@@ -21,9 +21,17 @@ def interesting_trends(place_name):
     place_name = place_name.lower()
     date = request.args.get('date')
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
+
+    ##Get trends
     heatmap_points = models.DateHeat.query.filter_by(date=date).first()
     trends = json.loads(heatmap_points.interest)
-    return json.dumps({"InterestingTrends":[trends[place_name]]})
+
+    ##Get links
+    docs = models.DateLink.query.filter_by(date=date).first()
+
+    list_of_docs = json.loads(docs.hid)
+
+    return json.dumps({"InterestingTrends":[trends[place_name]], "Related": list_of_docs})
 
 
 @app.route('/points_of_interest')

@@ -22,7 +22,7 @@
             </div>
         </div>
     </li>
-    {{#each suggested_results}}
+        {{#each suggested_results}}
         <li class="row">
             <div class="columns two">
                 <i class="material-icons">grade</i>
@@ -43,7 +43,12 @@
                 </div>
             </div>            
         </li>
-    {{/each}}
+        {{/each}}
+        {{#each related_results}}
+        <li>
+        <a href="https://www.parliament.nsw.gov.au/Hansard/Pages/HansardFull.aspx#/DateDisplay/{{event}}/{{hid}}">{{chamber}}</a>
+        </li>
+        {{/each}}
     {{else}}
     <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Please click a hotspot...</span></li>
     {{/if}}
@@ -200,7 +205,8 @@ $(document).ready(function() {
                     'town_selected': true, 
                     'town_name': name,
                     'points_of_interest': [],
-                    'suggested_results': data.InterestingTrends
+                    'suggested_results': data.InterestingTrends,
+                    'related_results': data.Related
                 }
             );
             update_aside(state);

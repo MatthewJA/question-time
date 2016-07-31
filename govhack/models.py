@@ -35,3 +35,15 @@ class DateHeat(Base):
 
     def __repr__(self):
         return '<DateHeat {}>'.format(self.date)
+
+class DateLink(Base):
+    __tablename__ = 'datelink'
+    date = sa.Column(sa.Date(), primary_key=True)
+    hid = sa.Column(sa.String())
+
+    def __init__(self, date, hid):
+        self.date = date
+        self.hid = hid
+
+    def __repr__(self):
+        return '<DateLink {} - {}>'.format(self.date, self.hid)
