@@ -27,8 +27,3 @@ def points_of_interest():
 def heatmap_points():
     with open('govhack/heatmap_sample.json') as f:
         return f.read()
-
-
-@app.route('/.well-known/acme-challenge/<id>')
-def acme_challenge(id):
-	return "%s.%s" % (id, os.environ.get('ACME_CHALLENGE', 'ACME CHALLENGE VARIABLE IS NOT SET'))
