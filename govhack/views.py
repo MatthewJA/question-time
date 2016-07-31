@@ -28,7 +28,7 @@ def interesting_trends(place_name):
 
     ##Get links
     docs = models.DateLink.query.filter_by(date=date).first()
-    first_hid = trends['hansard_ids'][0]
+    first_hid = trends[place_name]['hansard_ids'][0]
     chamber_id = first_hid.split('-')[1]
 
     link = ''
