@@ -44,11 +44,36 @@
             </div>            
         </li>
         {{/each}}
-        <li>
-        <a href="https://www.parliament.nsw.gov.au/Hansard/Pages/HansardFull.aspx#/DateDisplay{{related_results}}" target="_blank">See at Hansard</a>
+        <li class="row">
+            <div class="columns two">
+                <i class="material-icons">link</i>
+            </div>
+            <div class="columns ten">
+                <a href="https://www.parliament.nsw.gov.au/Hansard/Pages/HansardFull.aspx#/DateDisplay/{{related_results}}" target="_blank">See at Hansard</a>
+            </div>
         </li>
+    {{else if loading_trends}}
+    <li class="nothing-selected">
+        <div class="row">
+            <div class="columns two">
+                <i class="material-icons heading">room</i>
+            </div>
+            <div class="columns ten">
+                <div class="place-name">Loading data for {{town_name}}...</div>
+            </div>
+        </div>
+    </li>
     {{else}}
-    <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Please click a hotspot...</span></li>
+    <li class="nothing-selected">
+        <div class="row">
+            <div class="columns two">
+                <i class="material-icons heading">room</i>
+            </div>
+            <div class="columns ten">
+                <div class="place-name">Click a hotspot to find out more...</div>
+            </div>
+        </div>
+    </li>
     {{/if}}
 {% endraw %}
 </ul>
@@ -67,6 +92,7 @@ $(document).ready(function() {
         'town_name': '',
         'suggested_results': [],
         'points_of_interest': [],
+        'loading_trends': false,
     }
 
     var styleSet = {
@@ -194,7 +220,13 @@ $(document).ready(function() {
 
     var on_feature_click = (feature, layer) => {
         var name = feature.getProperties().properties.name;
-        console.log(name);
+        state = Object.assign({}, state,
+        {
+            'loading_trends': true,
+            'town_name': name,
+            'town_selected': false
+        });
+        update_aside(state);
         fetch('/interesting_trends/'+name+'?date='+state.selected_date)
         .then(response => response.json())
         .then(data => {
@@ -202,7 +234,7 @@ $(document).ready(function() {
                 {
                     'town_selected': true, 
                     'town_name': name,
-                    'points_of_interest': [],
+                    'loading_trends': false,
                     'suggested_results': data.InterestingTrends,
                     'related_results': data.Related
                 }
@@ -293,7 +325,7 @@ $(document).ready(function() {
 
 {% block mapinfo %}
 <div class="container">
-    <div class="columns ten inner">
+    <div class="columns ten inner" id="map-buttons">
         {% for date in available_dates %}
             <button class="button date">{{date}}</button>
         {% endfor %}
