@@ -27,8 +27,7 @@ main {
 aside {
 	@include unit(half);
 	#aside-inner {
-		padding: 3em;
-		padding-top: 2em;
+		padding: 2em 3em;
 		min-height: $min-card-height;
 	}
 
@@ -48,9 +47,6 @@ aside {
 			.material-icons, .title-text {
 				display: inline-block;
 				vertical-align: middle;
-			}
-			.title-text {
-				margin-left: 0.5em;
 			}
 			.material-icons.heading {
 				font-size: 3rem;
