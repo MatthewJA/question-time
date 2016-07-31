@@ -18,7 +18,7 @@
             </div>
             <div class="columns ten">
                 <div class="place-name">{{town_name}}</div>
-                <div>{{selected_date}}</div>            
+                <div>({{selected_date}})</div>            
             </div>
         </div>
     </li>
@@ -253,8 +253,10 @@ $(document).ready(function() {
     var date_selected = (datestring) => {
         // Remove layers
         remove_layers();
-        fetch_points_of_interest(datestring);
-        fetch_heatmap(datestring);
+        fetch_heatmap(datestring).then(
+            fetch_points_of_interest.bind(null, datestring)
+        );
+        
         $('button.date').removeClass('selected');
         $('button.date').each(x => {
             var y = $('button.date').get(x);
