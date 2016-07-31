@@ -12,20 +12,40 @@
 {% raw %}
     {{#if town_selected }}
     <li class="results-for">
-        <i class="material-icons heading">room</i> Discussions about <span class="place-name">{{town_name}}</span>
+        <div class="row">
+            <div class="columns two">
+                <i class="material-icons heading">room</i>
+            </div>
+            <div class="columns ten">
+                <div class="place-name">{{town_name}}</div>
+                <div>({{selected_date}})</div>            
+            </div>
+        </div>
     </li>
     {{#each suggested_results}}
-        <li>
-            <div class="title-item">
-                <i class="material-icons">description</i><span class="title-text">{{topic}}</span>
+        <li class="row">
+            <div class="columns two">
+                <i class="material-icons">grade</i>
             </div>
-            <div class="description-item">
-                <p>{{description}}</p>
+            <div class="columns ten">
+                <div class="title-text">
+                    <p>{{topic}}</p>
+                </div>
             </div>
+        </li>
+        <li class="row">
+            <div class="columns two">
+                <i class="material-icons">description</i>
+            </div>
+            <div class="columns ten">
+                <div class="description-item">
+                    <p>{{description}}</p>
+                </div>
+            </div>            
         </li>
     {{/each}}
     {{else}}
-    <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Please click an area...</span></li>
+    <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Please click a hotspot...</span></li>
     {{/if}}
 {% endraw %}
 </ul>
@@ -233,8 +253,10 @@ $(document).ready(function() {
     var date_selected = (datestring) => {
         // Remove layers
         remove_layers();
-        fetch_points_of_interest(datestring);
-        fetch_heatmap(datestring);
+        fetch_heatmap(datestring).then(
+            fetch_points_of_interest.bind(null, datestring)
+        );
+        
         $('button.date').removeClass('selected');
         $('button.date').each(x => {
             var y = $('button.date').get(x);
@@ -267,7 +289,7 @@ $(document).ready(function() {
 
 {% block mapinfo %}
 <div class="container">
-    <div class="columns eight">
+    <div class="columns ten inner">
         {% for date in available_dates %}
             <button class="button date">{{date}}</button>
         {% endfor %}
