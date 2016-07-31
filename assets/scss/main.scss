@@ -17,6 +17,9 @@ $material-colour-main: #00C853;
 	height: $min-card-height;
 	width: 100%;
 }
+.map-container {
+	@extend %row;
+}
 main {
 	@include unit(two-thirds);
 }
