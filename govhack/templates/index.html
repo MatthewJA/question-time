@@ -44,11 +44,9 @@
             </div>            
         </li>
         {{/each}}
-        {{#each related_results}}
         <li>
-        <a href="https://www.parliament.nsw.gov.au/Hansard/Pages/HansardFull.aspx#/DateDisplay/{{event}}/{{hid}}">{{chamber}}</a>
+        <a href="https://www.parliament.nsw.gov.au/Hansard/Pages/HansardFull.aspx#/DateDisplay{{related_results}}" target="_blank">See at Hansard</a>
         </li>
-        {{/each}}
     {{else}}
     <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Please click a hotspot...</span></li>
     {{/if}}
