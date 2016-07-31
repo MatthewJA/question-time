@@ -8,10 +8,14 @@
 footer {
 	text-align: center;
 }
+
+$min-card-height: 500px;
+
+$material-colour-main: #00C853;
+
 .map {
-	height: 500px;
+	height: $min-card-height;
 	width: 100%;
-	box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.50);
 }
 main {
 	@include unit(two-thirds);
@@ -21,11 +25,8 @@ aside {
 	#aside-inner {
 		padding: 3em;
 		padding-top: 2em;
-		box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.50);
-		border: 1px solid #979797;
-		min-height: 60vh;
+		min-height: $min-card-height;
 	}
-	
 
 	ul {
 		color: #595959;
@@ -56,12 +57,18 @@ aside {
 		}
 	}
 }
+
 .nothing-selected, .results-for {
 	@extend h5;
 }
 
+.card {
+	box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
+    border: 1px solid #979797;
+}
+
 header {
-	background-color: #00C853;
+	background-color: $material-colour-main;
 	width: 100%;
 	color: white;
 	text-shadow: 0px 2px 4px rgba(148,148,148,0.50);
@@ -71,4 +78,20 @@ header {
 	margin-bottom: 1em;
 	box-shadow: 0px 3px 3px 0px rgba(181, 181, 181, 0.57);
 	font-family: "Roboto";
+}
+
+.introduction-container {
+	@extend %row;
+	.introduction {
+		@include unit();
+		float: none;
+		margin: 0 auto;
+		margin-top: 3em;
+		.introduction-inner {
+			padding: 1em;
+			h2 {
+				color: $material-colour-main;
+			}
+		}
+	}
 }

@@ -25,9 +25,23 @@
 			{% endblock %}
 		</main>
 		<aside>
-			<div id="aside-inner">
+			<div id="aside-inner" class="card">
 			</div>
 		</aside>
+	</div>
+	<div class="container introduction-container">
+		<div class="introduction">
+			<div class="introduction-inner">
+				<h2>What is Question Time?</h2>
+				<p>Love Hansard but wish it was somehow represented on a map? So do we. That's why we created <em>Question Time</em>.</p>
+
+				<p>We love political banter, and we wanted to visualise how political debate occurs over time. For each day of the 2015 -- 2016 NSW Parliament, <em>Question Time</em> visualises mentions of NSW suburbs found in the NSW Parliament Hansard with a heatmap of how unusually often each suburb was mentioned.</p>
+
+				<p>We also analyse the top five location mentions in NSW on each sitting day and plot them on the same map. Clicking one of these locations opens data in the sidebar about why it was interesting on that day. We're going to start out with snippets of mentions in Hansard, but plan to include more interesting record information via NLP.</p>
+
+				<p>We made extensive use of Python's Flask and also the OpenLayers 3 mapping library that gives us heatmaps overlaid onto regular maps for free.</p>
+			</div>
+		</div>
 	</div>
 	<div class="push"></div>
 </div>
