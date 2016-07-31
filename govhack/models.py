@@ -1,18 +1,21 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
+import sqlalchemy as sa
+import sqlalchemy.ext as ext
+import sqlalchemy.ext.declarative
+import sqlalchemy.orm as orm
 from database import Base
 
 
 class InterestingTrend():
-	def __init__(self, title, description):
-		self.title = title
-		self.description = description
+    def __init__(self, title, description):
+        self.title = title
+        self.description = description
 
-	def to_dict(self):
-		return {
-			'title': self.title,
-			'description': self.description
-		}
-
+    def to_dict(self):
+        return {
+            'title': self.title,
+            'description': self.description
+        }
+        
     @staticmethod
     def from_dict(dct):
         return InterestingTrend(dct['title'], dct['description'])

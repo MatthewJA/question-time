@@ -3,7 +3,6 @@
 <div>
     <div id="map" class="map card"></div>
 </div>
-
 <script src="//cdnjs.cloudflare.com/ajax/libs/ol3/3.17.1/ol.js" type="text/javascript"></script>
 <script type="text/javascript" src="//code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
@@ -190,16 +189,16 @@ $(document).ready(function() {
         return layer.get('name') === POI_LAYER;
     }
 
-    var fetch_points_of_interest = () => {
-        return fetch('/points_of_interest')
+    var fetch_points_of_interest = (datestring) => {
+        return fetch('/points_of_interest?date='+datestring)
         .then(response=>response.json())
         .then(data=>data.PointsOfInterest)
         .then(generate_points_layer)
         .then(add_layer)
     }
 
-    var fetch_heatmap = () => {
-        return fetch('/heatmap_points')
+    var fetch_heatmap = (datestring) => {
+        return fetch('/heatmap_points?date='+datestring)
         .then(response=>response.json())
         .then(data=>data.HeatmapPoints)
         .then(generate_heatmap_layer)
@@ -217,11 +216,43 @@ $(document).ready(function() {
         $('#aside-inner').html(html);
     }
 
+    $('button.date').click(ev=> {
+        var datestring = ev.target.textContent;
+    });
+
+    var date_selected = (datestring) => {
+        // Remove layers
+        remove_layers();
+        fetch_points_of_interest(datestring);
+        fetch_heatmap(datestring);
+    }
+
+    var poi_heatmap_filter = (layer) => {
+        if (layer.get('name') === POI_LAYER || layer.get('name') === HEATMAP_LAYER) {
+            return true
+        }
+        return false;
+    }
+
+    var remove_layers = () => {
+        var layers = map.getLayers().getArray().filter(poi_heatmap_filter)
+        layers.forEach(layer=>{map.removeLayer(layer)});
+    }
+
+    date_selected($('button.date').get(0).textContent);
+
     update_aside(state);
 
-    fetch_points_of_interest();
-
-    fetch_heatmap();
 });
 </script>
+{% endblock %}
+
+{% block mapinfo %}
+<div class="container">
+    <div class="columns eight">
+        {% for date in available_dates %}
+            <button class="button date">{{date}}</button>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

@@ -6,11 +6,14 @@ import os
 
 from . import app
 from . import models
+from . import database
+
 
 @app.route('/')
 def index():
-    return render_template('index.html')
-
+    #Get list of all dates we have
+    available_dates = [d.date for d in database.db_session.query(models.DateHeat.date).distinct()]
+    return render_template('index.html', available_dates = available_dates)
 
 @app.route('/interesting_trends/<place_name>')
 def interesting_trends(place_name):
@@ -27,3 +30,9 @@ def points_of_interest():
 def heatmap_points():
     with open('govhack/heatmap_sample.json') as f:
         return f.read()
+
+@app.route('/db_test')
+def db_test():
+    from database import db_session
+    for i in db_session.query(models.DateHeat.date).distinct():
+        return str(i)
