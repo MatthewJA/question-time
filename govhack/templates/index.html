@@ -53,9 +53,27 @@
             </div>
         </li>
     {{else if loading_trends}}
-    <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Loading data for {{town_name}}...</span></li>
+    <li class="nothing-selected">
+        <div class="row">
+            <div class="columns two">
+                <i class="material-icons heading">room</i>
+            </div>
+            <div class="columns ten">
+                <div class="place-name">Loading data for {{town_name}}...</div>
+            </div>
+        </div>
+    </li>
     {{else}}
-    <li class="nothing-selected"><i class="material-icons heading">room</i><span class="title-text">Click a hotspot to find out more...</span></li>
+    <li class="nothing-selected">
+        <div class="row">
+            <div class="columns two">
+                <i class="material-icons heading">room</i>
+            </div>
+            <div class="columns ten">
+                <div class="place-name">Click a hotspot to find out more...</div>
+            </div>
+        </div>
+    </li>
     {{/if}}
 {% endraw %}
 </ul>
