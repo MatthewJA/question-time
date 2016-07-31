@@ -12,12 +12,12 @@
 {% raw %}
     {{#if town_selected }}
     <li class="results-for">
-        <i class="material-icons heading">room</i> Discussions about Coogee  <span class="place-name">{{town_name}}</span>
+        <i class="material-icons heading">room</i> Discussions about <span class="place-name">{{town_name}}</span>
     </li>
     {{#each suggested_results}}
         <li>
             <div class="title-item">
-                <i class="material-icons">description</i><span class="title-text">{{title}}</span>
+                <i class="material-icons">description</i><span class="title-text">{{topic}}</span>
             </div>
             <div class="description-item">
                 <p>{{description}}</p>
@@ -172,7 +172,6 @@ $(document).ready(function() {
     var on_feature_click = (feature, layer) => {
         var name = feature.getProperties().properties.name;
         console.log(name);
-        debugger;
         fetch('/interesting_trends/'+name+'?date='+state.selected_date)
         .then(response => response.json())
         .then(data => {
@@ -238,8 +237,9 @@ $(document).ready(function() {
         fetch_heatmap(datestring);
         $('button.date').removeClass('selected');
         $('button.date').each(x => {
-            if (x.textContent === datestring) {
-                x.addClass('selected');                
+            var y = $('button.date').get(x);
+            if (y.textContent === datestring) {
+                $(y).addClass('selected');                
             }
         });
         state = Object.assign({}, state, {'selected_date': datestring});

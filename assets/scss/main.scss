@@ -12,6 +12,7 @@ footer {
 $min-card-height: 500px;
 
 $material-colour-main: #00C853;
+$material-colour-secondary: #69F0AE;
 
 .map {
 	height: $min-card-height;
@@ -100,5 +101,5 @@ header {
 }
 
 button.date.selected {
-	background-color: red;
+	background-color: $material-colour-secondary;
 }
