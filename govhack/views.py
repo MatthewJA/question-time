@@ -1,8 +1,9 @@
 import json
 
-from flask import render_template
+from flask import render_template, request
 
 import os
+import datetime
 
 from . import app
 from . import models
@@ -23,13 +24,16 @@ def interesting_trends(place_name):
 
 @app.route('/points_of_interest')
 def points_of_interest():
+    date = request.args.get('date')
     with open('govhack/points_of_interest_sample.json') as f:
         return f.read()
 
 @app.route('/heatmap_points')
 def heatmap_points():
-    with open('govhack/heatmap_sample.json') as f:
-        return f.read()
+    date = request.args.get('date')
+    date = datetime.datetime.strptime(date, '%Y-%m-%d')
+    heatmap_points = models.DateHeat.query.filter_by(date=date).first()
+    return '{"HeatmapPoints": %s}' % (heatmap_points.heat)
 
 @app.route('/db_test')
 def db_test():

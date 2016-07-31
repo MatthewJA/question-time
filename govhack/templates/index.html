@@ -156,7 +156,7 @@ $(document).ready(function() {
     var map = new ol.Map({
         target: 'map',
         layers: [
-        osm_layer
+            osm_layer
         ],
         view: new ol.View({
             center: ol.proj.fromLonLat([147.01, -32.09]),
@@ -217,12 +217,13 @@ $(document).ready(function() {
     }
 
     $('button.date').click(ev=> {
+        console.log(ev.target.textContent);
         var datestring = ev.target.textContent;
     });
 
     var date_selected = (datestring) => {
         // Remove layers
-        remove_layers();
+        //remove_layers();
         fetch_points_of_interest(datestring);
         fetch_heatmap(datestring);
     }
@@ -239,7 +240,10 @@ $(document).ready(function() {
         layers.forEach(layer=>{map.removeLayer(layer)});
     }
 
-    date_selected($('button.date').get(0).textContent);
+    //date_selected($('button.date').get(0).textContent);
+
+    fetch_points_of_interest('2015-08-13');
+    fetch_heatmap('2015-08-13')
 
     update_aside(state);
 
