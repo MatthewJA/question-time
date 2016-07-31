@@ -1,7 +1,7 @@
 from flask import Flask, url_for, redirect
 
 from . import assets
-from database import db_session
+from .database import db_session
 from . import models
 
 app = Flask(__name__, instance_relative_config=True)
