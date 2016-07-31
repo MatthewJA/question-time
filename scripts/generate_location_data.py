@@ -5,9 +5,13 @@ import datetime
 import json
 
 import numpy
-
-import hansard
 import sqlalchemy as sa
+
+import database
+import hansard
+
+
+N_PEAKS = 5
 
 
 def generate_heatmap_data():
@@ -33,22 +37,38 @@ def generate_heatmap_data():
     mean = data.mean(axis=0)
     # Divide out to normalise.
     data /= mean + 1
+
+    # Get the top n peaks for each date.
+    all_peaks = numpy.argsort(data, axis=1)[:, -N_PEAKS:]
+
     # For each date, dump to a mildly horrifying JSON string. Then store in the
     # database!
-    for i, date in enumerate(dates):
+    for i, (date,) in enumerate(dates):
         # [{name, lat, lon, weight}]
-        lst = []
+        heat = []
+        # {location: [lat, lon]}
+        peaks = {}
         for j, location in enumerate(locations):
             if data[i, j] != 0:
                 lat, lon = loc_to_pos[location]
-                lst.append({
+                heat.append({
                     'name': location,
                     'lat': lat,
                     'lon': lon,
                     'weight': data[i, j],
                 })
-        print(date, lst)
-        break
+
+        for location_idx in all_peaks[i]:
+            location = locations[location_idx]
+            lat, lon = loc_to_pos[location]
+            peaks[location] = (lat, lon)
+
+        heat = json.dumps(heat)
+        peaks = json.dumps(peaks)
+
+        dh = database.DateHeat(date, heat, peaks, '[]')
+        database.db_session.add(dh)
+        database.db_session.commit()
 
 
 if __name__ == '__main__':
