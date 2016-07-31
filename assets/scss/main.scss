@@ -22,10 +22,10 @@ $material-colour-secondary: #69F0AE;
 	@extend %row;
 }
 main {
-	@include unit(two-thirds);
+	@include unit(half);
 }
 aside {
-	@include unit(third);
+	@include unit(half);
 	#aside-inner {
 		padding: 3em;
 		padding-top: 2em;
@@ -112,14 +112,17 @@ button.date.selected {
 	background-color: $material-colour-secondary;
 }
 
-.map-info .map-container .inner {
-	margin: 0 auto;
-	float: none;
-}
+
 .map-info {
 	margin-top: 3em;
 	h2 {
 		color: $material-colour-main;
 		text-align: center;
 	}
+}
+
+#map-buttons {
+	margin: 0 auto;
+	float: none;
+	text-align: center;
 }

@@ -48,7 +48,7 @@
             <div class="columns two">
                 <i class="material-icons">link</i>
             </div>
-            <div class="columns two">
+            <div class="columns ten">
                 <a href="https://www.parliament.nsw.gov.au/Hansard/Pages/HansardFull.aspx#/DateDisplay/{{related_results}}" target="_blank">See at Hansard</a>
             </div>
         </li>
@@ -298,7 +298,7 @@ $(document).ready(function() {
 
 {% block mapinfo %}
 <div class="container">
-    <div class="columns ten inner">
+    <div class="columns ten inner" id="map-buttons">
         {% for date in available_dates %}
             <button class="button date">{{date}}</button>
         {% endfor %}
