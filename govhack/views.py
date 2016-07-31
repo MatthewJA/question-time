@@ -31,4 +31,4 @@ def heatmap_points():
 
 @app.route('/.well-known/acme-challenge/<id>')
 def acme_challenge(id):
-	return os.environ.get('ACME_CHALLENGE', 'NO ACME CHALLENGE CONFIGURED')
+	return "%s.%s" % (id, os.environ.get('ACME_CHALLENGE', 'ACME CHALLENGE VARIABLE IS NOT SET'))
