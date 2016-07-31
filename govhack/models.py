@@ -2,7 +2,7 @@ import sqlalchemy as sa
 import sqlalchemy.ext as ext
 import sqlalchemy.ext.declarative
 import sqlalchemy.orm as orm
-from database import Base
+from .database import Base
 
 
 class InterestingTrend():
