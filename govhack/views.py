@@ -28,10 +28,18 @@ def interesting_trends(place_name):
 
     ##Get links
     docs = models.DateLink.query.filter_by(date=date).first()
+    first_hid = heatmap_points.interest['hansard_ids'][0]
+    chamber_id = first_hid.split('-')[1]
 
+    link = ''
     list_of_docs = json.loads(docs.hid)
+    for doc in list_of_docs:
+        chamber_id_ = doc['event'].split('-')[1]
+        if chamber_id_ == chamber_id:
+            link = doc['event'] + '/' + first_hid
 
-    return json.dumps({"InterestingTrends":[trends[place_name]], "Related": list_of_docs})
+    return json.dumps({"InterestingTrends":[trends[place_name]],
+                       "Related": link})
 
 
 @app.route('/points_of_interest')
