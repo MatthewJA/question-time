@@ -18,15 +18,20 @@ def index():
 
 @app.route('/interesting_trends/<place_name>')
 def interesting_trends(place_name):
-    one_place_name = models.InterestingTrend('The crisis facing %s' % (place_name), 'There is a definitive crisis happening around the place.')
-    return json.dumps({'InterestingTrends':[one_place_name.to_dict()]})
+    place_name = place_name.lower()
+    date = request.args.get('date')
+    date = datetime.datetime.strptime(date, '%Y-%m-%d')
+    heatmap_points = models.DateHeat.query.filter_by(date=date).first()
+    trends = json.loads(heatmap_points.interest)
+    return json.dumps({"InterestingTrends":[trends[place_name]]})
 
 
 @app.route('/points_of_interest')
 def points_of_interest():
     date = request.args.get('date')
-    with open('govhack/points_of_interest_sample.json') as f:
-        return f.read()
+    date = datetime.datetime.strptime(date, '%Y-%m-%d')
+    heatmap_points = models.DateHeat.query.filter_by(date=date).first()
+    return '{"PointsOfInterest": %s}' % (heatmap_points.peaks)
 
 @app.route('/heatmap_points')
 def heatmap_points():

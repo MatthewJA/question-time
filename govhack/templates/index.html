@@ -12,7 +12,7 @@
 {% raw %}
     {{#if town_selected }}
     <li class="results-for">
-        <i class="material-icons heading">room</i> Trends for <span class="place-name">{{town_name}}</span>
+        <i class="material-icons heading">room</i> Discussions about Coogee  <span class="place-name">{{town_name}}</span>
     </li>
     {{#each suggested_results}}
         <li>
@@ -108,7 +108,7 @@ $(document).ready(function() {
         var heatmap_features = []
         var data = new ol.source.Vector();
         elements.forEach(element => {
-            var total_to_add = Math.max(1, Math.floor(element.weight/2));
+            var total_to_add = Math.max(1, Math.floor(element.weight * 2));
             for (var i = 0; i < total_to_add; i++) {
                 var pt = new ol.geom.Point([element.lon, element.lat]);
                 var heatmap_feature = new ol.Feature({
@@ -165,19 +165,22 @@ $(document).ready(function() {
     });
 
     map.on('click', function(evt) {
+        console.log(state.points_of_interest);
         var feature = map.forEachFeatureAtPixel(evt.pixel, on_feature_click, null, is_point_of_interest);
     });
 
     var on_feature_click = (feature, layer) => {
         var name = feature.getProperties().properties.name;
         console.log(name);
-        fetch('/interesting_trends/'+name)
+        debugger;
+        fetch('/interesting_trends/'+name+'?date='+state.selected_date)
         .then(response => response.json())
         .then(data => {
             state = Object.assign({}, state, 
                 {
                     'town_selected': true, 
                     'town_name': name,
+                    'points_of_interest': [],
                     'suggested_results': data.InterestingTrends
                 }
             );
@@ -193,6 +196,12 @@ $(document).ready(function() {
         return fetch('/points_of_interest?date='+datestring)
         .then(response=>response.json())
         .then(data=>data.PointsOfInterest)
+        .then(data=>{ 
+            state = Object.assign({}, state, {
+                points_of_interest: data
+            });
+            return data;
+        })
         .then(generate_points_layer)
         .then(add_layer)
     }
@@ -219,6 +228,7 @@ $(document).ready(function() {
     $('button.date').click(ev=> {
         console.log(ev.target.textContent);
         var datestring = ev.target.textContent;
+        date_selected(datestring);
     });
 
     var date_selected = (datestring) => {
@@ -226,6 +236,13 @@ $(document).ready(function() {
         remove_layers();
         fetch_points_of_interest(datestring);
         fetch_heatmap(datestring);
+        $('button.date').removeClass('selected');
+        $('button.date').each(x => {
+            if (x.textContent === datestring) {
+                x.addClass('selected');                
+            }
+        });
+        state = Object.assign({}, state, {'selected_date': datestring});
     }
 
     var poi_heatmap_filter = (layer) => {
