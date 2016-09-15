@@ -13,6 +13,7 @@ from . import database
 @app.route('/')
 def index():
     #Get list of all dates we have
+    print "hello"
     available_dates = [d.date for d in database.db_session.query(models.DateHeat.date).distinct()]
     available_dates.sort()
     return render_template('index.html', available_dates = available_dates)
@@ -56,6 +57,11 @@ def heatmap_points():
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
     heatmap_points = models.DateHeat.query.filter_by(date=date).first()
     return '{"HeatmapPoints": %s}' % (heatmap_points.heat)
+
+@app.route('/available_dates')
+def available_dates():
+    available_dates = [d.date for d in database.db_session.query(models.DateHeat.date).distinct()]
+    return json.dumps({"AvailableDates":available_dates})
 
 @app.route('/db_test')
 def db_test():
