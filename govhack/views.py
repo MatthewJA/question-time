@@ -13,7 +13,6 @@ from . import database
 @app.route('/')
 def index():
     #Get list of all dates we have
-    print "hello"
     available_dates = [d.date for d in database.db_session.query(models.DateHeat.date).distinct()]
     available_dates.sort()
     return render_template('index.html', available_dates = available_dates)
