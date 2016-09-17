@@ -4,6 +4,7 @@ from flask import render_template, request, abort, jsonify
 
 import os
 import datetime
+import arrow
 from flask_swagger import swagger
 
 from . import app
@@ -147,7 +148,7 @@ def available_dates():
                             type: string
 
     """
-    available_dates = [d.date for d in database.db_session.query(models.DateHeat.date).distinct()]
+    available_dates = [arrow.get(d.date).format('YYYY-MM-DD') for d in database.db_session.query(models.DateHeat.date).distinct()]
     return json.dumps({"AvailableDates":available_dates})
 
 @app.route('/db_test')
