@@ -1,9 +1,10 @@
 import json
 
-from flask import render_template, request, abort
+from flask import render_template, request, abort, jsonify
 
 import os
 import datetime
+from flask_swagger import swagger
 
 from . import app
 from . import models
@@ -79,6 +80,8 @@ def points_of_interest():
                 properties: 
                     PointsOfInterest:
                         type: array
+                        items:
+                            type: string
         '404':
             description: Could not find points of interest for the given date.
         '405':
@@ -116,6 +119,8 @@ def heatmap_points():
                 properties:
                     HeatmapPoints:
                         type: array
+                        items:
+                            type: string
     """
     date = request.args.get('date')
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
@@ -138,6 +143,8 @@ def available_dates():
                 properties: 
                     HeatmapPoints:
                         type: array
+                        items:
+                            type: string
 
     """
     available_dates = [d.date for d in database.db_session.query(models.DateHeat.date).distinct()]
@@ -148,3 +155,10 @@ def db_test():
     from database import db_session
     for i in db_session.query(models.DateHeat.date).distinct():
         return str(i)
+
+@app.route('/api_doc')
+def api_doc():
+    swag = swagger(app)
+    swag['info']['version'] = "1.0"
+    swag['info']['title'] = "QuestionTime API"
+    return jsonify(swag)

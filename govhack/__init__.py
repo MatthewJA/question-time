@@ -4,9 +4,13 @@ from . import assets
 from .database import db_session
 from . import models
 
+from flask.ext.cors import CORS
+
 app = Flask(__name__, instance_relative_config=True)
 
 assets.register_assets(app)
+
+CORS(app)
 
 import govhack.views
 
