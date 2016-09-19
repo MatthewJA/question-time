@@ -80,9 +80,10 @@ def points_of_interest():
                 id: PointsOfInterest
                 properties: 
                     PointsOfInterest:
-                        type: array
-                        items:
-                            type: string
+                        type: object
+                        additionalProperties:
+                            type: array
+                            items: long
         '404':
             description: Could not find points of interest for the given date.
         '405':
