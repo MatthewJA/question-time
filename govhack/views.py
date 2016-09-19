@@ -83,7 +83,8 @@ def points_of_interest():
                         type: object
                         additionalProperties:
                             type: array
-                            items: long
+                            items: 
+                                type: long
         '404':
             description: Could not find points of interest for the given date.
         '405':
@@ -122,7 +123,7 @@ def heatmap_points():
                     HeatmapPoints:
                         type: array
                         items:
-                            type: string
+                            type: double
     """
     date = request.args.get('date')
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
