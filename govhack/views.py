@@ -72,7 +72,7 @@ def points_of_interest():
           required: true
           type: string
     produces:
-        - application/json
+        - text/html
     responses:
         '200':
             description: Found points of interest.
@@ -140,9 +140,9 @@ def available_dates():
         '200':
             description: Found dates.
             schema:
-                id: HeatmapPoints
+                id: AvailableDates
                 properties: 
-                    HeatmapPoints:
+                    AvailableDates:
                         type: array
                         items:
                             type: string
