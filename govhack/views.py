@@ -124,7 +124,21 @@ def heatmap_points():
                     HeatmapPoints:
                         type: array
                         items:
-                            type: integer
+                            schema:
+                                id: HeatmapPoint
+                                properties:
+                                    lon:
+                                        type: number
+                                        format: double
+                                    lat:
+                                        type: number
+                                        format: double
+                                    weight: 
+                                        type: number
+                                        format: double
+                                    name:
+                                        type: string
+
     """
     date = request.args.get('date')
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
