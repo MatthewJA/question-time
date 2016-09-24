@@ -28,12 +28,37 @@ def interesting_trends(place_name):
     parameters:
         - in: query
           name: date
+          required: true
+          type: string
         - in: path
           name: place_name
           type: string
+          required: true
     responses:
         '200':
-            description: Found POI for the given date.
+            description: Found a point of interest for the given date.
+            schema:
+                id: InterestingTrends
+                properties:
+                    InterestingTrends:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                description:
+                                    type: string
+                                hansard_ids:
+                                    type: array
+                                    items:
+                                        type: string
+                                topic:
+                                    type: string
+                    Related:
+                        type: string
+                    Date:
+                        type: string
+    produces:
+        - text/html
     """
     place_name = place_name.lower()
     date = request.args.get('date')
@@ -56,7 +81,8 @@ def interesting_trends(place_name):
             link = doc['event'] + '/' + first_hid
 
     return json.dumps({"InterestingTrends":[trends[place_name]],
-                       "Related": link})
+                       "Related": link,
+                       "Date": date})
 
 
 @app.route('/points_of_interest')
@@ -176,7 +202,11 @@ def db_test():
 
 @app.route('/api_doc')
 def api_doc():
-    swag = swagger(app)
-    swag['info']['version'] = "1.0"
-    swag['info']['title'] = "QuestionTime API"
-    return jsonify(swag)
+    swagger_conf = swagger(app)
+    # General declarations
+    swagger_conf['info']['version'] = "1.0"
+    swagger_conf['info']['title'] = "QuestionTime API"
+    #You can change this if you don't want to use the production basepath
+    swagger_conf['host'] = 'safe-oasis-74257.herokuapp.com'
+    swagger_conf['schemes'] = ['https']
+    return jsonify(swagger_conf)
