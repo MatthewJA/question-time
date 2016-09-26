@@ -62,6 +62,7 @@ def interesting_trends(place_name):
     """
     place_name = place_name.lower()
     date = request.args.get('date')
+    date_str = date
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
 
     ##Get trends
@@ -82,7 +83,7 @@ def interesting_trends(place_name):
 
     return json.dumps({"InterestingTrends":[trends[place_name]],
                        "Related": link,
-                       "Date": date})
+                       "Date": date_str})
 
 
 @app.route('/points_of_interest')
