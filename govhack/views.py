@@ -7,6 +7,8 @@ import datetime
 import arrow
 from flask_swagger import swagger
 
+from sqlalchemy.sql.expression import func
+
 from . import app
 from . import models
 from . import database
@@ -24,7 +26,7 @@ def interesting_trends(place_name):
     """
     Gets metadata about a point of interest for a particular date.
     ---
-    description: ""
+    description: "Gets metadata about a point of interest for a particular date."
     parameters:
         - in: query
           name: date
@@ -91,7 +93,7 @@ def points_of_interest():
     """
     Gets the points of interest for a particular date.
     ---
-    description: ""
+    description: "Gets the points of interest for a particular date."
     parameters:
         - in: query
           name: date
@@ -133,7 +135,7 @@ def heatmap_points():
     """
     Gets a set of weighted heatmap latitude/longitude points.
     ---
-    description: ""
+    description: "Gets a set of weighted heatmap latitude/longitude points."
     parameters:
         - in: query
           name: date
@@ -177,7 +179,7 @@ def available_dates():
     """
     Gets a list of all available dates.
     ---
-    description: ""
+    description: "Gets a list of all available dates."
     produces:
         - application/json
     responses:
@@ -194,6 +196,44 @@ def available_dates():
     """
     available_dates = [arrow.get(d.date).format('YYYY-MM-DD') for d in database.db_session.query(models.DateHeat.date).distinct()]
     return json.dumps({"AvailableDates":available_dates})
+
+@app.route('/random_point')
+def random_point():
+    """
+    Gets a single Point of Interest randomly.
+    ---
+    description: "Gets a single Point of Interest randomly."
+    produces:
+        - application/json
+    responses:
+        '200':
+            description: Found a random point of interest.
+            schema:
+                id: PointOfInterest
+                properties:
+                    lat:
+                        type: number
+                        format: double
+                    lon:
+                        type: number
+                        format: double
+                    name:
+                        type: string
+                    date:
+                        type: string
+    """
+    #Warning: this could be done in a more performant way so try not to hit it too much
+    heatmap_points = models.DateHeat.query.order_by(func.random()).limit(1).first()
+    if not heatmap_points:
+        return abort(501)
+    peaks = json.loads(heatmap_points.peaks)
+    heatmap_point_name = peaks.keys()[0]
+    return json.dumps({
+        'lat': peaks[heatmap_point_name][0],
+        'lon': peaks[heatmap_point_name][1],
+        'name': heatmap_point_name,
+        'date': arrow.get(heatmap_points.date).format('YYYY-MM-DD')
+    })
 
 @app.route('/db_test')
 def db_test():
