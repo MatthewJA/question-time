@@ -227,7 +227,7 @@ def random_point():
     if not heatmap_points:
         return abort(501)
     peaks = json.loads(heatmap_points.peaks)
-    heatmap_point_name = peaks.keys()[0]
+    heatmap_point_name = list(peaks.keys())[0]
     return json.dumps({
         'lat': peaks[heatmap_point_name][0],
         'lon': peaks[heatmap_point_name][1],
