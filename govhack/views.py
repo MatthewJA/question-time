@@ -263,7 +263,7 @@ def nearby_points():
                 items:
                     $ref: "#/definitions/PointOfInterest"
         '400':
-            description: Reqires longitude and latitude variables
+            description: Requires longitude and latitude variables.
     """
 
     latitude_str = request.args.get('latitude')
