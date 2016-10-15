@@ -7,6 +7,7 @@ import datetime
 import arrow
 from flask_swagger import swagger
 import sklearn.neighbors
+from sklearn.externals import joblib
 import numpy
 
 from sqlalchemy.sql.expression import func
@@ -14,7 +15,7 @@ from sqlalchemy.sql.expression import func
 from . import app
 from . import models
 from . import database
-
+from . import cache
 
 @app.route('/')
 def index():
@@ -242,7 +243,7 @@ def nearby_points():
     """
     Gets nearby points for a given longitude and latitude.
     ---
-    description: "Gets five nearby point of interest pairs.
+    description: "Gets five nearby point of interest pairs."
     parameters:
         - in: query
           name: latitude
@@ -261,9 +262,18 @@ def nearby_points():
                 type: array
                 items:
                     $ref: #/definitions/PointOfInterest
+        '400':
+            description: Reqires longitude and latitude variables
     """
 
-    # Machine learning, woo!
+    latitude_str = request.args.get('latitude')
+    longitude_str = request.args.get('longitude')
+
+    if not longitude_str or not longitude_str:
+        abort(400)
+
+    latitude = float(latitude_str)
+    longitude = float(longitude_str)
 
     #Load positions
     all_dates = models.DateHeat.query.all()
@@ -290,13 +300,24 @@ def nearby_points():
     #Numpy the array so it's usable by KDTree
     coords = numpy.array(peak_coords)
 
-    #Add positions to tree
-    kdtree = sklearn.neighbors.KDTree(coords)
+    #Attempt to cache the tree / get tree out of cache
+    import StringIO
+    model_string = StringIO.StringIO()
 
-    #Cache the tree
+    kdtree_cached = cache.get("kdtree_cached")
+
+    if not kdtree_cached:
+        #Add positions to tree to build cached tree
+        kdtree = sklearn.neighbors.KDTree(coords)
+        joblib.dump(kdtree, model_string)
+        cache.set("kdtree_cached", model_string.getvalue())
+    else:
+        #Build tree from cache
+        model_string.write(kdtree_cached)
+        kdtree = joblib.load(model_string)
 
     #Query
-    query_result = kdtree.query([[-33.917, 151.207]], k=5)
+    query_result = kdtree.query([[latitude, longitude]], k=5)
 
     _, (indices,) = query_result
 
