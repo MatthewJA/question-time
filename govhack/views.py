@@ -261,7 +261,7 @@ def nearby_points():
             schema:
                 type: array
                 items:
-                    $ref: #/definitions/PointOfInterest
+                    $ref: "#/definitions/PointOfInterest"
         '400':
             description: Reqires longitude and latitude variables
     """
