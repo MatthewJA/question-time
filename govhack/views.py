@@ -6,6 +6,8 @@ import os
 import datetime
 import arrow
 from flask_swagger import swagger
+import sklearn.neighbors
+import numpy
 
 from sqlalchemy.sql.expression import func
 
@@ -234,6 +236,80 @@ def random_point():
         'name': heatmap_point_name,
         'date': arrow.get(heatmap_points.date).format('YYYY-MM-DD')
     })
+
+@app.route('/nearby_points')
+def nearby_points():
+    """
+    Gets nearby points for a given longitude and latitude.
+    ---
+    description: "Gets five nearby point of interest pairs.
+    parameters:
+        - in: query
+          name: latitude
+          required: true
+          type: string
+        - in: query
+          name: longitude
+          required: true
+          type: string
+    produces:
+        - application/json
+    responses:
+        '200':
+            description: Found five nearby points of interest.
+            schema:
+                type: array
+                items:
+                    $ref: #/definitions/PointOfInterest
+    """
+
+    # Machine learning, woo!
+
+    #Load positions
+    all_dates = models.DateHeat.query.all()
+
+    all_peaks_as_tuples = [(json.loads(date_heat.peaks), arrow.get(date_heat.date).format('YYYY-MM-DD')) for date_heat in all_dates]
+
+    #Store coords
+    peak_coords = []
+
+    #Store list of place names
+    peak_names = []
+
+    #Store list of dates
+    peak_dates = []
+
+    #INDEX!!!
+    for peak_tuple in all_peaks_as_tuples:
+        peak_dict, peak_date = peak_tuple
+        for key in peak_dict:
+            peak_coords.append(peak_dict[key])
+            peak_names.append(key)
+            peak_dates.append(peak_date)
+
+    #Numpy the array so it's usable by KDTree
+    coords = numpy.array(peak_coords)
+
+    #Add positions to tree
+    kdtree = sklearn.neighbors.KDTree(coords)
+
+    #Cache the tree
+
+    #Query
+    query_result = kdtree.query([[-33.917, 151.207]], k=5)
+
+    _, (indices,) = query_result
+
+    #Marshal into results
+    results = [{
+        'date':peak_dates[indice], 
+        'name': peak_names[indice], 
+        'lat': peak_coords[indice][0],
+        'lon': peak_coords[indice][1],
+    } for indice in indices]
+
+
+    return json.dumps(results)
 
 @app.route('/db_test')
 def db_test():
