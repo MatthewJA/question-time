@@ -289,7 +289,7 @@ def nearby_points():
     #Store list of dates
     peak_dates = []
 
-    #INDEX!!!
+    #Index all data so it can be retrieved by the kdtree query result
     for peak_tuple in all_peaks_as_tuples:
         peak_dict, peak_date = peak_tuple
         for key in peak_dict:
@@ -321,7 +321,7 @@ def nearby_points():
 
     _, (indices,) = query_result
 
-    #Marshal into results
+    #Marshall into results
     results = [{
         'date':peak_dates[indice], 
         'name': peak_names[indice], 
@@ -329,7 +329,7 @@ def nearby_points():
         'lon': peak_coords[indice][1],
     } for indice in indices]
 
-
+    #Return as JSON
     return json.dumps(results)
 
 @app.route('/db_test')
