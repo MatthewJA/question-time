@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask, url_for, redirect
 
 from werkzeug.contrib.cache import SimpleCache
@@ -9,6 +11,11 @@ from . import models
 from flask.ext.cors import CORS
 
 app = Flask(__name__, instance_relative_config=True)
+
+#Initialise logging
+logger = logging.StreamHandler()
+
+app.logger.addHandler(logger)
 
 assets.register_assets(app)
 
