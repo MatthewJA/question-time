@@ -18,7 +18,7 @@ def get_kdtree(coordinates, use_cache=True):
 
 	kdtree_cached_file = StringIO.StringIO()
 
-	if kdtree_cached and use_cache:
+	if kdtree_cached_str and use_cache:
 		#Use cached version
 		kdtree_cached_file.write(kdtree_cached_str)
 		try:
