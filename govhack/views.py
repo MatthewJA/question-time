@@ -6,9 +6,7 @@ import os
 import datetime
 import arrow
 from flask_swagger import swagger
-import sklearn.neighbors
-from sklearn.externals import joblib
-import numpy
+
 
 from sqlalchemy.sql.expression import func
 
@@ -16,6 +14,7 @@ from . import app
 from . import models
 from . import database
 from . import cache
+from . import geolocation_helpers
 
 @app.route('/')
 def index():
@@ -297,24 +296,7 @@ def nearby_points():
             peak_names.append(key)
             peak_dates.append(peak_date)
 
-    #Numpy the array so it's usable by KDTree
-    coords = numpy.array(peak_coords)
-
-    #Attempt to cache the tree / get tree out of cache
-    import StringIO
-    model_string = StringIO.StringIO()
-
-    kdtree_cached = cache.get("kdtree_cached")
-
-    if not kdtree_cached:
-        #Add positions to tree to build cached tree
-        kdtree = sklearn.neighbors.KDTree(coords)
-        joblib.dump(kdtree, model_string)
-        cache.set("kdtree_cached", model_string.getvalue())
-    else:
-        #Build tree from cache
-        model_string.write(kdtree_cached)
-        kdtree = joblib.load(model_string)
+    kdtree = geolocation_helpers.get_kdtree(peak_coords)
 
     #Query
     query_result = kdtree.query([[latitude, longitude]], k=5)
