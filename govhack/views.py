@@ -1,4 +1,6 @@
 import json
+import logging
+import random
 
 from flask import render_template, request, abort, jsonify
 
@@ -9,12 +11,15 @@ from flask_swagger import swagger
 
 
 from sqlalchemy.sql.expression import func
+from sqlalchemy.orm import load_only
 
 from . import app
 from . import models
 from . import database
 from . import cache
 from . import geolocation_helpers
+
+logger = logging.getLogger('govhack')
 
 @app.route('/')
 def index():
@@ -109,12 +114,12 @@ def points_of_interest():
             description: Found points of interest.
             schema:
                 id: PointsOfInterest
-                properties: 
+                properties:
                     PointsOfInterest:
                         type: object
                         additionalProperties:
                             type: array
-                            items: 
+                            items:
                                 type: number
                                 format: double
         '404':
@@ -123,7 +128,7 @@ def points_of_interest():
             description: Invalid input.
     """
     date = request.args.get('date')
-    try: 
+    try:
         date = datetime.datetime.strptime(date, '%Y-%m-%d')
     except:
         abort(405)
@@ -164,7 +169,7 @@ def heatmap_points():
                                     lat:
                                         type: number
                                         format: double
-                                    weight: 
+                                    weight:
                                         type: number
                                         format: double
                                     name:
@@ -189,7 +194,7 @@ def available_dates():
             description: Found dates.
             schema:
                 id: AvailableDates
-                properties: 
+                properties:
                     AvailableDates:
                         type: array
                         items:
@@ -224,16 +229,30 @@ def random_point():
                     date:
                         type: string
     """
-    #Warning: this could be done in a more performant way so try not to hit it too much
-    heatmap_points = models.DateHeat.query.order_by(func.random()).limit(1).first()
-    if not heatmap_points:
+
+    random_dateset = models.DateHeat.query.options(load_only('date')).offset(
+        func.floor(
+            func.random() * database.db_session.query(func.count(models.DateHeat.date))
+        )
+    ).limit(1).all()
+
+    if len(random_dateset) < 1:
         return abort(501)
+
+    heatmap_points = random_dateset[0]
+
     peaks = json.loads(heatmap_points.peaks)
-    heatmap_point_name = list(peaks.keys())[0]
+
+    peak_names = list(peaks.keys())
+
+    random_peak_name = peak_names[random.randint(0, len(peak_names) - 1)]
+
+    random_peak_coords = peaks[random_peak_name]
+
     return json.dumps({
-        'lat': peaks[heatmap_point_name][0],
-        'lon': peaks[heatmap_point_name][1],
-        'name': heatmap_point_name,
+        'lat': random_peak_coords[0],
+        'lon': random_peak_coords[1],
+        'name': random_peak_name,
         'date': arrow.get(heatmap_points.date).format('YYYY-MM-DD')
     })
 
@@ -305,8 +324,8 @@ def nearby_points():
 
     #Marshall into results
     results = [{
-        'date':peak_dates[indice], 
-        'name': peak_names[indice], 
+        'date':peak_dates[indice],
+        'name': peak_names[indice],
         'lat': peak_coords[indice][0],
         'lon': peak_coords[indice][1],
     } for indice in indices]
