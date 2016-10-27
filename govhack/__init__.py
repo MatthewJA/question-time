@@ -13,9 +13,15 @@ from flask.ext.cors import CORS
 app = Flask(__name__, instance_relative_config=True)
 
 #Initialise logging
-logger = logging.StreamHandler()
+logHandler = logging.StreamHandler()
 
-app.logger.addHandler(logger)
+logHandler.setLevel(logging.WARNING)
+
+app.logger.addHandler(logHandler)
+
+logger = logging.getLogger('govhack')
+
+logger.addHandler(logHandler)
 
 assets.register_assets(app)
 
